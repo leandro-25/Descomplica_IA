@@ -1,0 +1,8 @@
+{
+  "name": "Descomplica AI - Edição Moderna",
+  "description": "Uma suíte sofisticada de ferramentas baseadas em IA projetada para ajudar com disfunção executiva, gerenciamento de tarefas e ajuste de tom de comunicação.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": []
+}
