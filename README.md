@@ -1,5 +1,10 @@
 # Descomplica AI
 
+[![Licença MIT](https://img.shields.io/badge/licença-MIT-blue.svg)](./LICENSE)
+[![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6-646cff.svg)](https://vite.dev/)
+[![Groq](https://img.shields.io/badge/LLM-Groq-f55241.svg)](https://console.groq.com/)
+
 > Suíte de ferramentas com IA para disfunção executiva, organização de tarefas e comunicação assertiva.
 
 O **Descomplica AI** transforma ideias vagas em planos acionáveis: quebra tarefas grandes em passos pequenos, extrai to-dos de um desabafo, estima tempo de forma realista, analisa decisões com prós e contras e ajusta o tom de textos. Frontend 100% client-side com React 19 + Vite e inferência LLM via Groq.
@@ -8,15 +13,15 @@ O **Descomplica AI** transforma ideias vagas em planos acionáveis: quebra taref
 
 > 📷 Prints de tela ainda não foram adicionados ao repositório. Enquanto isso, rode localmente (seção [🚀 Como usar](#-como-usar)) para ver a aplicação em `http://localhost:3000`.
 
-Fluxo principal: **Dashboard → Compiler → Magic To-Do → Estimator**, com atalhos entre ferramentas (Consultant → Compiler, Compiler → Magic To-Do).
+Fluxo integrado: **Dashboard → Compiler → Magic To-Do**, com atalhos entre ferramentas (Consultant → Compiler, Compiler → Magic To-Do). O Estimator funciona de forma independente para tarefas avulsas.
 
 ## ✨ Funcionalidades
 
 | Ferramenta | O que faz | Ideal para |
 |---|---|---|
-| **Magic To-Do** | Quebra uma tarefa grande em subtarefas com nível de detalhamento ajustável (slider 1–5, padrão 3); no nível 5 inclui até microações como "abrir o navegador" | Procrastinação, tarefas que parecem grandes demais |
+| **Magic To-Do** | Quebra uma tarefa grande em subtarefas com nível de detalhamento ajustável (slider 1–5, padrão 3; no nível 5 inclui até microações como "abrir o navegador"). Estima o tempo de cada etapa com "imposto de transição" de 15–20%, soma tudo, aplica margem de 25% e projeta em dias (base 6h/dia) | Procrastinação, tarefas que parecem grandes demais |
 | **Compiler** | Extrai uma lista organizada de tarefas a partir de um texto livre / brain dump e envia a lista para o Magic To-Do | Descarregar a mente e organizar em seguida |
-| **Estimator** | Estima tempo por etapa com regras de realismo (soma das subtarefas + "imposto de transição" de 15–20%, estimativa generosa porque neurodivergentes costumam subestimar por 2x) | Planejamento que subestima tempo |
+| **Estimator** | Calcula o esforço real de uma tarefa/projeto avulso ("Calcular Esforço Real") e devolve uma estimativa honesta e generosa em texto simples de 5 a 15 linhas | Planejamento rápido de uma tarefa isolada |
 | **Consultant** | Analisa um dilema e retorna prós, contras e conclusão pragmática; pode enviar o plano ao Compiler | Decisões, diferentes perspectivas |
 | **Formalizer** | Reescreve textos em 9 tons — mais profissional, mais educado, menos agressivo, mais fácil de ler, mais conciso, mais amigável, e-mail formal, grupo de amigos, correção ortográfica gentil — sem markdown nem emojis | E-mails, mensagens profissionais, comunicação difícil |
 
@@ -44,7 +49,7 @@ Recursos transversais:
 
 - [Groq SDK](https://console.groq.com/) (`groq-sdk` 1.6) rodando no browser (`dangerouslyAllowBrowser: true`)
 - Modelos com rotação round-robin e fallback: `qwen/qwen3.8-27b`, `openai/gpt-oss-20b`, `qwen/qwen3.6-27b`, `openai/gpt-oss-120b`, `groq/compound-mini`, `groq/compound`
-- `response_format: json_object` com retry em texto puro + parsing tolerante (`parseJson` extrai JSON de blocos ``` se preciso)
+- `response_format: json_object` com retry em texto puro + parsing tolerante (`parseJson` extrai JSON de blocos de código se preciso)
 
 **Ferramentas**
 
@@ -98,10 +103,10 @@ O servidor dev sobe em **http://localhost:3000** (`host: 0.0.0.0`, port 3000 no 
 **Fluxo sugerido**
 
 1. Escreva um desabafo/brain dump no campo de comando do Dashboard → vai para o **Compiler**
-2. O Compiler extrai a lista de tarefas e envia ao **Magic To-Do**
-3. No Magic To-Do, ajuste o nível de detalhamento (1–5) e quebre as tarefas
-4. Passe o plano ao **Estimator** para somas e "imposto de transição"
-5. Use o **Consultant** para dilemas e o **Formalizer** para ajustar o tom de mensagens
+2. O Compiler extrai a lista de tarefas e envia ao **Magic To-Do** (botão "Enviar ao Magic To-Do")
+3. No Magic To-Do, ajuste o nível de detalhamento (1–5), quebre as tarefas e peça a estimativa de tempo (por tarefa ou de todas de uma vez) para ver soma, margem de 25% e projeção em dias
+4. Para uma tarefa avulsa, use o **Estimator** ("Calcular Esforço Real")
+5. Use o **Consultant** para dilemas (envie o plano ao Compiler) e o **Formalizer** para ajustar o tom de mensagens
 
 ## 📁 Estrutura do projeto
 
@@ -114,7 +119,7 @@ O servidor dev sobe em **http://localhost:3000** (`host: 0.0.0.0`, port 3000 no 
 ├── components/
 │   ├── MagicTodo.tsx        # Quebra de tarefas + slider de detalhamento (1–5)
 │   ├── Compiler.tsx         # Brain dump → lista de tarefas → Magic To-Do
-│   ├── Estimator.tsx        # Estimativa de tempo detalhada
+│   ├── Estimator.tsx        # Esforço real de uma tarefa avulsa (texto)
 │   ├── Consultant.tsx       # Prós / contras / conclusão → Compiler
 │   ├── Formalizer.tsx       # 9 tons de reescrita
 │   └── icons.tsx            # Ícones SVG
@@ -125,8 +130,12 @@ O servidor dev sobe em **http://localhost:3000** (`host: 0.0.0.0`, port 3000 no 
 │   └── index.ts             # Exportações (useToast)
 ├── vite.config.ts           # Porta 3000, alias @, env GROQ_API_KEY
 ├── tsconfig.json            # TypeScript (ES2022, react-jsx, noEmit)
+├── package.json             # Scripts (dev/build/preview) e dependências
 ├── start.bat / build.bat / preview.bat   # Atalhos Windows
 ├── metadata.json            # Metadados do projeto
+├── .agents/skills/          # Skills locais de editor/agentes
+├── LICENSE                  # Licença MIT
+├── README.md                # Esta documentação
 └── .env.local               # GROQ_API_KEY (não commitar)
 ```
 
@@ -172,13 +181,13 @@ Itens planejados (ainda não implementados):
 - [ ] Suíte de testes (Vitest + Testing Library) e linter (ESLint/Prettier)
 - [ ] CI com build + typecheck automáticos no GitHub Actions
 - [ ] Screenshots/GIFs do fluxo de uso na seção de demonstração
-- [ ] Estimativa de tempo aplicada automaticamente às tarefas do Magic To-Do
+- [ ] Estimativa de tempo automática ao quebrar tarefas (hoje é disparada por clique)
 - [ ] Modo offline / PWA e carregamento da chave via variáveis de ambiente no deploy
-- [ ] Definir licença oficial e publicar primeira versão (`v0.1.0`)
+- [ ] Publicar a primeira versão estável (`v0.1.0`) no GitHub
 
 ## 🤝 Contribuindo
 
-Contribuições são bem-vindas! Fluxo sugerido:
+Contribuições são bem-vindas sob a licença MIT do projeto. Fluxo sugerido:
 
 1. Faça um fork e crie uma branch: `git checkout -b feature/minha-melhoria`
 2. Instale as dependências: `npm install`
@@ -195,4 +204,6 @@ Dicas de estilo:
 
 ## 📄 Licença
 
-Projeto acadêmico — **FATEC**. Ainda não há arquivo `LICENSE` no repositório; defina uma licença (ex.: MIT) antes de publicar ou aceitar contribuições externas.
+Este projeto está sob a licença **MIT** — veja o arquivo [`LICENSE`](./LICENSE) para os detalhes.
+
+Projeto acadêmico — **FATEC**. Copyright (c) 2026 Leandro.
