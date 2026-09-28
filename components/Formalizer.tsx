@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { groqService } from '../services/groqService';
 import { Icons } from './icons';
 import { useToast } from '../context';
+import { useAutoGrow } from '../hooks/useAutoGrow';
 
 export const Formalizer: React.FC = () => {
   const { showToast } = useToast();
@@ -10,6 +11,7 @@ export const Formalizer: React.FC = () => {
   const [tone, setTone] = useState('mais profissional');
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
+  const { ref: textareaRef } = useAutoGrow();
 
   const tones = [
     'mais profissional',
@@ -48,6 +50,7 @@ export const Formalizer: React.FC = () => {
       <div className="space-y-4">
         <label className="label">Texto Original</label>
         <textarea
+          ref={textareaRef}
           className="textarea"
           placeholder="Ex: Eu preciso dizer ao meu chefe que vou me atrasar de novo..."
           value={text}

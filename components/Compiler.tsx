@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { groqService } from '../services/groqService';
 import { Icons } from './icons';
 import { useToast } from '../context';
+import { useAutoGrow } from '../hooks/useAutoGrow';
 
 interface CompilerProps {
   preloadValue?: string;
@@ -15,6 +16,7 @@ export const Compiler: React.FC<CompilerProps> = ({ preloadValue, onClearPreload
   const [input, setInput] = useState(preloadValue || '');
   const [results, setResults] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const { ref: textareaRef } = useAutoGrow();
 
   useEffect(() => {
     if (preloadValue) setInput(preloadValue);
@@ -55,6 +57,7 @@ export const Compiler: React.FC<CompilerProps> = ({ preloadValue, onClearPreload
       <div className="space-y-4">
         <label className="label">Brain Dump</label>
         <textarea
+          ref={textareaRef}
           className="textarea"
           placeholder="Ex: Preciso organizar o aniversário, comprar bolo, balões, convidar o pessoal do trabalho, mas antes tenho que limpar a sala e ver se o som tá funcionando..."
           value={input}

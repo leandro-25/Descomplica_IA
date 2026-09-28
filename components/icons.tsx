@@ -5,13 +5,15 @@ interface IconProps {
   className?: string;
   strokeWidth?: number;
   fill?: string;
+  style?: React.CSSProperties;
 }
 
-const createIcon = (paths: React.ReactNode) => ({
+const createIcon = (paths: React.ReactNode, defaults: Partial<IconProps> = {}) => ({
   size = 20,
   className = '',
-  strokeWidth = 2,
+  strokeWidth = defaults.strokeWidth ?? 2,
   fill = 'none',
+  style,
 }: IconProps) => (
   <svg
     width={size}
@@ -23,6 +25,7 @@ const createIcon = (paths: React.ReactNode) => ({
     strokeLinecap="round"
     strokeLinejoin="round"
     className={className}
+    style={style}
     aria-hidden="true"
   >
     {paths}

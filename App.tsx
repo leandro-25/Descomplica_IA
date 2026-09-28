@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ToolType } from './types';
+import { useAutoGrow } from './hooks/useAutoGrow';
 import { MagicTodo } from './components/MagicTodo';
 import { Compiler } from './components/Compiler';
 import { Estimator } from './components/Estimator';
@@ -22,7 +23,7 @@ const AppContent: React.FC = () => {
   const [compilerPreload, setCompilerPreload] = useState('');
   const [magicTodoPreload, setMagicTodoPreload] = useState<string[]>([]);
   const [commandValue, setCommandValue] = useState('');
-  const commandRef = useRef<HTMLTextAreaElement>(null);
+  const { ref: commandRef } = useAutoGrow();
 
   const handleSendToCompiler = (text: string) => {
     setCompilerPreload(text);

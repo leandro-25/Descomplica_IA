@@ -11,16 +11,46 @@ O **Descomplica AI** transforma ideias vagas em planos acionáveis: quebra taref
 
 ## 📸 Demonstração
 
-> 📷 Prints de tela ainda não foram adicionados ao repositório. Enquanto isso, rode localmente (seção [🚀 Como usar](#-como-usar)) para ver a aplicação em `http://localhost:3000`.
+Capturas da aplicação rodando em desenvolvimento (`npm run dev` → `http://localhost:3000`).
 
-Fluxo integrado: **Dashboard → Compiler → Magic To-Do**, com atalhos entre ferramentas (Consultant → Compiler, Compiler → Magic To-Do). O Estimator funciona de forma independente para tarefas avulsas.
+O fluxo principal é **Dashboard → Compiler → Magic To-Do**, com atalhos entre ferramentas (Consultant → Compiler, Compiler → Magic To-Do). O Estimator funciona de forma independente para tarefas avulsas.
+
+### Compiler — brain dump → lista de tarefas
+
+![Compiler com brain dump na entrada e a lista de tarefas gerada abaixo](img/compiler.PNG)
+
+O texto vira tarefas em imperativo, **com etapas que não estavam no original** (definir data/horário, orçamento) e em ordem de execução. O botão *Exportar Tudo* envia a lista ao Magic To-Do.
+
+### Magic To-Do — quebra de tarefas e estimativas
+
+![Magic To-Do com tarefa expandida em subtarefas e slider de nível de detalhamento](img/to-do.PNG)
+
+Nível de detalhamento ajustável (1–5), subtarefas aninhadas com checkbox próprio e *Estimar Todos*: soma das etapas + margem de 25% + projeção em dias.
+
+### Estimator — esforço real de uma tarefa avulsa
+
+![Estimator mostrando a estimativa de tempo para escrever um artigo de 1500 palavras](img/estimator.PNG)
+
+Estimativa honesta e generosa com a divisão por etapas — ex.: artigo de 1500 palavras → 2 a 3 horas, com pesquisa, outline, redação e revisão.
+
+### Consultant — prós, contras e veredito
+
+![Consultant com cards de Prós e Contras e o Veredito com botão Enviar ao Compiler](img/consultant.PNG)
+
+Análise do dilema em cards de Prós/Contras e conclusão pragmática — o botão *Enviar ao Compiler* leva o veredito para a próxima ferramenta do fluxo.
+
+### Formalizer — ajuste de tom
+
+![Formalizer reescrevendo um pedido de reunião como e-mail formal](img/formalizer.PNG)
+
+Um dos 9 tons disponíveis (*Como um e-mail formal*): aqui o texto curto virou um e-mail completo, com assunto, saudação e despedida — e botão de copiar.
 
 ## ✨ Funcionalidades
 
 | Ferramenta | O que faz | Ideal para |
 |---|---|---|
 | **Magic To-Do** | Quebra uma tarefa grande em subtarefas com nível de detalhamento ajustável (slider 1–5, padrão 3; no nível 5 inclui até microações como "abrir o navegador"). Estima o tempo de cada etapa com "imposto de transição" de 15–20%, soma tudo, aplica margem de 25% e projeta em dias (base 6h/dia) | Procrastinação, tarefas que parecem grandes demais |
-| **Compiler** | Extrai uma lista organizada de tarefas a partir de um texto livre / brain dump e envia a lista para o Magic To-Do | Descarregar a mente e organizar em seguida |
+| **Compiler** | Transforma um brain dump em lista de tarefas acionáveis: reescreve em verbo no imperativo, **acrescenta etapas implícitas que faltavam** (definir data, orçamento, conferência), remove genéricos e ordena por ordem de execução — e envia a lista para o Magic To-Do | Descarregar a mente e organizar em seguida |
 | **Estimator** | Calcula o esforço real de uma tarefa/projeto avulso ("Calcular Esforço Real") e devolve uma estimativa honesta e generosa em texto simples de 5 a 15 linhas | Planejamento rápido de uma tarefa isolada |
 | **Consultant** | Analisa um dilema e retorna prós, contras e conclusão pragmática; pode enviar o plano ao Compiler | Decisões, diferentes perspectivas |
 | **Formalizer** | Reescreve textos em 9 tons — mais profissional, mais educado, menos agressivo, mais fácil de ler, mais conciso, mais amigável, e-mail formal, grupo de amigos, correção ortográfica gentil — sem markdown nem emojis | E-mails, mensagens profissionais, comunicação difícil |
@@ -33,6 +63,7 @@ Recursos transversais:
 - Navegação por teclado (`Enter` para enviar, `aria-labels`, foco visível)
 - Layout responsivo: sidebar fixa no desktop, barra inferior no mobile
 - Animações com Framer Motion e suporte a `prefers-reduced-motion`
+- Campos de texto crescem junto com o conteúdo (`useAutoGrow`) — texto grande é lido por inteiro, sem corte
 - Saída da IA sanitizada: remove tags de raciocínio, markdown pesado e emojis
 
 ## 🛠️ Tecnologias
@@ -48,7 +79,7 @@ Recursos transversais:
 **IA**
 
 - [Groq SDK](https://console.groq.com/) (`groq-sdk` 1.6) rodando no browser (`dangerouslyAllowBrowser: true`)
-- Modelos com rotação round-robin e fallback: `qwen/qwen3.8-27b`, `openai/gpt-oss-20b`, `qwen/qwen3.6-27b`, `openai/gpt-oss-120b`, `groq/compound-mini`, `groq/compound`
+- Round-robin entre modelos com retry real: se um falhar (429/erro), tenta o próximo da lista até 6 modelos: `qwen/qwen3.8-27b`, `openai/gpt-oss-20b`, `qwen/qwen3.6-27b`, `openai/gpt-oss-120b`, `groq/compound-mini`, `groq/compound`
 - `response_format: json_object` com retry em texto puro + parsing tolerante (`parseJson` extrai JSON de blocos de código se preciso)
 
 **Ferramentas**
@@ -125,6 +156,8 @@ O servidor dev sobe em **http://localhost:3000** (`host: 0.0.0.0`, port 3000 no 
 │   └── icons.tsx            # Ícones SVG
 ├── services/
 │   └── groqService.ts       # Cliente Groq, rotação de modelos, prompts, sanitização
+├── hooks/
+│   └── useAutoGrow.ts       # Textarea que cresce com o conteúdo
 ├── context/
 │   ├── ToastContext.tsx     # ToastProvider + toasts acessíveis
 │   └── index.ts             # Exportações (useToast)
@@ -133,6 +166,7 @@ O servidor dev sobe em **http://localhost:3000** (`host: 0.0.0.0`, port 3000 no 
 ├── package.json             # Scripts (dev/build/preview) e dependências
 ├── start.bat / build.bat / preview.bat   # Atalhos Windows
 ├── metadata.json            # Metadados do projeto
+├── img/                     # Capturas de tela usadas no README
 ├── .agents/skills/          # Skills locais de editor/agentes
 ├── LICENSE                  # Licença MIT
 ├── README.md                # Esta documentação
@@ -180,7 +214,8 @@ Itens planejados (ainda não implementados):
 - [ ] Persistência local das tarefas (`localStorage`) — hoje o estado é perdido ao recarregar
 - [ ] Suíte de testes (Vitest + Testing Library) e linter (ESLint/Prettier)
 - [ ] CI com build + typecheck automáticos no GitHub Actions
-- [ ] Screenshots/GIFs do fluxo de uso na seção de demonstração
+- [ ] GIF do fluxo completo (Dashboard → Compiler → Magic To-Do) na seção de demonstração
+- [ ] Print do Dashboard inicial
 - [ ] Estimativa de tempo automática ao quebrar tarefas (hoje é disparada por clique)
 - [ ] Modo offline / PWA e carregamento da chave via variáveis de ambiente no deploy
 - [ ] Publicar a primeira versão estável (`v0.1.0`) no GitHub

@@ -4,6 +4,7 @@ import { groqService } from '../services/groqService';
 import { ConsultantResult } from '../types';
 import { Icons } from './icons';
 import { useToast } from '../context';
+import { useAutoGrow } from '../hooks/useAutoGrow';
 
 interface ConsultantProps {
   onSendToCompiler?: (text: string) => void;
@@ -14,6 +15,7 @@ export const Consultant: React.FC<ConsultantProps> = ({ onSendToCompiler }) => {
   const [input, setInput] = useState('');
   const [result, setResult] = useState<ConsultantResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const { ref: textareaRef } = useAutoGrow();
 
   const handleConsult = useCallback(async () => {
     if (!input.trim()) return;
@@ -43,6 +45,7 @@ export const Consultant: React.FC<ConsultantProps> = ({ onSendToCompiler }) => {
       <div className="space-y-4">
         <label className="label">Seu Dilema</label>
         <textarea
+          ref={textareaRef}
           className="textarea"
           placeholder="Ex: Devo pedir demissão agora para focar no meu projeto paralelo ou esperar mais 3 meses?"
           value={input}

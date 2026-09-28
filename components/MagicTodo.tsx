@@ -205,8 +205,8 @@ export const MagicTodo: React.FC<MagicTodoProps> = ({ preloadTasks, onClearPrelo
             </span>
           </label>
 
-          <div className="flex-1 flex flex-col md:flex-row md:items-center gap-2 overflow-hidden min-w-0">
-            <span className={`text-sm md:text-base truncate font-medium ${task.isCompleted ? 'line-through text-[var(--ink-4)]' : 'text-[var(--ink)]'}`}>
+          <div className="flex-1 flex flex-col md:flex-row md:items-center gap-2 min-w-0">
+            <span className={`text-sm md:text-base font-medium whitespace-normal break-words ${task.isCompleted ? 'line-through text-[var(--ink-4)]' : 'text-[var(--ink)]'}`}>
               {task.text}
             </span>
             {task.timeLabel && !task.isMagicLoading && (
